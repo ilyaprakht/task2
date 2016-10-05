@@ -11,5 +11,17 @@
 
     <artifactId>client</artifactId>
 
+    <packaging>jar</packaging>
+
+    <build>
+        <finalName>client</finalName>
+        <outputDirectory>target</outputDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 
 </project>

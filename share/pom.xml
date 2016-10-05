@@ -11,5 +11,17 @@
 
     <artifactId>share</artifactId>
 
+    <packaging>jar</packaging>
+
+    <build>
+        <finalName>share</finalName>
+        <outputDirectory>target</outputDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
 
 </project>

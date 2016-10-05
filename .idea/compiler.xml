@@ -22,10 +22,17 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
+        <module name="client" />
+        <module name="server" />
+        <module name="share" />
         <module name="task2_4" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="client" target="1.7" />
+      <module name="server" target="1.7" />
+      <module name="share" target="1.7" />
+      <module name="task2" target="1.7" />
       <module name="task2_4" target="1.5" />
     </bytecodeTargetLevel>
   </component>
