@@ -1,9 +1,11 @@
 package view.impl;
 
+import model.Field;
 import view.View;
 import view.event.input.EnterStepInputEvent;
 import view.event.input.EnterUsernameInputEvent;
 import view.event.input.InputEvent;
+import view.event.output.CompetitorsStepResultOutputEvent;
 import view.event.output.OutputEvent;
 import view.event.output.PrintGameFieldOutputEvent;
 import view.event.output.StartGameOutputEvent;
@@ -87,18 +89,21 @@ public class ConsoleView implements View {
 
     @Override
     public void writeCompetitorsStepResultOk(OutputEvent event) {
-        write("competitors step adopted");
+        Field field = ((CompetitorsStepResultOutputEvent) event).getField();
+        write("competitors step adopted: " + field.getStepType().getValue() + " " + field.getPosX() + " " + field.getPosY());
     }
 
     @Override
     public void writeCompetitorsStepResultEndOfGame(OutputEvent event) {
-        write("competitors step adopted");
+        Field field = ((CompetitorsStepResultOutputEvent) event).getField();
+        write("competitors step adopted: " + field.getStepType().getValue() + " " + field.getPosX() + " " + field.getPosY());
         write("end of game. nobody wins");
     }
 
     @Override
     public void writeCompetitorsStepResultWin(OutputEvent event) {
-        write("competitors step adopted");
+        Field field = ((CompetitorsStepResultOutputEvent) event).getField();
+        write("competitors step adopted: " + field.getStepType().getValue() + " " + field.getPosX() + " " + field.getPosY());
         write("you lose");
     }
 

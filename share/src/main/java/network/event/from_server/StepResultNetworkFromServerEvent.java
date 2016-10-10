@@ -1,6 +1,5 @@
 package network.event.from_server;
 
-
 import model.enums.StepResult;
 import network.enums.NetworkFromServerEventType;
 

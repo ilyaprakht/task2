@@ -3,10 +3,10 @@ package controller;
 import model.ClientGamePlay;
 import model.Field;
 import network.enums.NetworkFromClientEventType;
-import network.enums.NetworkFromServerEventType;
 import network.event.from_client.NetworkFromClientEvent;
 import network.event.from_client.ReadyToPlayNetworkFromClientEvent;
 import network.event.from_client.SendStepNetworkFromClientEvent;
+import network.event.from_server.CompetitorsStepResultNetworkFromServerEvent;
 import network.event.from_server.NetworkFromServerEvent;
 import network.event.from_server.StartGameNetworkFromServerEvent;
 import network.event.from_server.StepResultNetworkFromServerEvent;
@@ -16,6 +16,7 @@ import view.enums.InputEventType;
 import view.enums.OutputEventType;
 import view.event.input.EnterStepInputEvent;
 import view.event.input.EnterUsernameInputEvent;
+import view.event.output.CompetitorsStepResultOutputEvent;
 import view.event.output.OutputEvent;
 import view.event.output.StartGameOutputEvent;
 import view.event.output.StepResultOutputEvent;
@@ -48,6 +49,18 @@ public class ClientController implements Runnable, ViewObservable {
             enterStep();
             checkStepResult();
         }
+        while (true) {
+            if (gamePlay.isEndOfGame()) {
+                break;
+            }
+            checkCompetitorsStep();
+
+            if (gamePlay.isEndOfGame()) {
+                break;
+            }
+            enterStep();
+            checkStepResult();
+        }
     }
 
     private void start() {
@@ -65,12 +78,17 @@ public class ClientController implements Runnable, ViewObservable {
     }
 
     private void checkStartGame() {
+        network.sendEvent(new NetworkFromClientEvent(NetworkFromClientEventType.CHECK_GAME));
+
         NetworkFromServerEvent event = network.getEvent();
-        if (event.getEventType() == NetworkFromServerEventType.WAIT_GAME) {
-            waitGame();
-            checkStartGame();
-        } else if (event.getEventType() == NetworkFromServerEventType.START_GAME) {
-            startGame(event);
+        switch (event.getEventType()) {
+            case WAIT_GAME:
+                waitGame();
+                checkStartGame();
+                break;
+            case START_GAME:
+                startGame(event);
+                break;
         }
     }
 
@@ -81,7 +99,6 @@ public class ClientController implements Runnable, ViewObservable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        network.sendEvent(new NetworkFromClientEvent(NetworkFromClientEventType.CHECK_GAME));
     }
 
     private void startGame(NetworkFromServerEvent event) {
@@ -113,6 +130,52 @@ public class ClientController implements Runnable, ViewObservable {
         StepResultNetworkFromServerEvent event = (StepResultNetworkFromServerEvent) network.getEvent();
         StepResultOutputEvent outEvent = new StepResultOutputEvent(event.getStepResult());
         notifyObservers(outEvent);
+
+        switch (event.getStepResult()) {
+            case NOT_VALID_FIELD:
+            case BUSY_FIELD:
+                enterStep();
+                break;
+            case END_OF_GAME:
+            case WINNER_STEP:
+                gamePlay.setEndOfGame(true);
+        }
+    }
+
+    private void checkCompetitorsStep() {
+        network.sendEvent(new NetworkFromClientEvent(NetworkFromClientEventType.CHECK_COMPETITORS_STEP));
+
+        NetworkFromServerEvent event = network.getEvent();
+        switch (event.getEventType()) {
+            case WAIT_COMPETITORS_STEP:
+                waitCompetitorsStep();
+                checkCompetitorsStep();
+                break;
+            case COMPETITORS_STEP:
+                enterCompetitorsStep(event);
+                break;
+        }
+    }
+
+    private void waitCompetitorsStep() {
+        notifyObservers(new OutputEvent(OutputEventType.WAIT_COMPETITORS_STEP));
+        try {
+            Thread.sleep(SLEEP_TIME);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void enterCompetitorsStep(NetworkFromServerEvent event) {
+        CompetitorsStepResultNetworkFromServerEvent stepEvent = (CompetitorsStepResultNetworkFromServerEvent) event;
+        CompetitorsStepResultOutputEvent outEvent = new CompetitorsStepResultOutputEvent(stepEvent.getStepResult(), stepEvent.getField());
+        notifyObservers(outEvent);
+
+        switch (stepEvent.getStepResult()) {
+            case END_OF_GAME:
+            case WINNER_STEP:
+                gamePlay.setEndOfGame(true);
+        }
     }
 
     @Override
