@@ -17,10 +17,22 @@ public interface View {
 
     void writeWaitCompetitorsStep(OutputEvent event);
 
-    void writeEnterStepResult(OutputEvent event);
+    void writeCompetitorsStepResultOk(OutputEvent event);
+
+    void writeCompetitorsStepResultEndOfGame(OutputEvent event);
+
+    void writeCompetitorsStepResultWin(OutputEvent event);
+
+    void writeStepResultOk(OutputEvent event);
+
+    void writeStepResultNotValid(OutputEvent event);
+
+    void writeStepResultBusyField(OutputEvent event);
+
+    void writeStepResultEndOfGame(OutputEvent event);
+
+    void writeStepResultWin(OutputEvent event);
 
     void writePrintGameField(OutputEvent event);
-
-    void writeEndOfGame(OutputEvent event);
 
 }

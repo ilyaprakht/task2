@@ -1,4 +1,4 @@
-package network;
+package controller;
 
 
 import network.event.from_client.NetworkFromClientEvent;

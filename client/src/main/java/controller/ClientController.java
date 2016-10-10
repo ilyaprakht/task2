@@ -1,8 +1,7 @@
 package controller;
 
+import model.ClientGamePlay;
 import model.Field;
-import model.Player;
-import network.NetworkController;
 import network.enums.NetworkFromClientEventType;
 import network.enums.NetworkFromServerEventType;
 import network.event.from_client.NetworkFromClientEvent;
@@ -11,7 +10,9 @@ import network.event.from_client.SendStepNetworkFromClientEvent;
 import network.event.from_server.NetworkFromServerEvent;
 import network.event.from_server.StartGameNetworkFromServerEvent;
 import network.event.from_server.StepResultNetworkFromServerEvent;
-import view.View;
+import view.ViewObservable;
+import view.ViewObserver;
+import view.enums.InputEventType;
 import view.enums.OutputEventType;
 import view.event.input.EnterStepInputEvent;
 import view.event.input.EnterUsernameInputEvent;
@@ -19,18 +20,21 @@ import view.event.output.OutputEvent;
 import view.event.output.StartGameOutputEvent;
 import view.event.output.StepResultOutputEvent;
 
-public class Controller implements Runnable {
+import java.util.ArrayList;
+import java.util.List;
 
-    private View view;
+public class ClientController implements Runnable, ViewObservable {
+
+    ViewController view;
     private NetworkController network;
-    private Player player;
-    private Player competitorsPlayer;
-    private boolean isFirstStepper;
+    List<ViewObserver> listObservers;
+    ClientGamePlay gamePlay;
 
     private final long SLEEP_TIME = 2000;
 
-    public Controller(View view, NetworkController network) {
+    public ClientController(ViewController view, NetworkController network) {
         this.view = view;
+        addObserver(this.view);
         this.network = network;
     }
 
@@ -40,23 +44,23 @@ public class Controller implements Runnable {
         enterUsername();
         sendReadyToPlay();
         checkStartGame();
-        if (isFirstStepper) {
+        if (gamePlay.isFirstStepper()) {
             enterStep();
             checkStepResult();
         }
     }
 
     private void start() {
-        view.writeStart(new OutputEvent(OutputEventType.START));
+        notifyObservers(new OutputEvent(OutputEventType.START));
     }
 
     private void enterUsername() {
-        EnterUsernameInputEvent event = (EnterUsernameInputEvent) view.readUsername();
-        player = new Player(event.getUserName());
+        EnterUsernameInputEvent event = (EnterUsernameInputEvent) view.getFromView(InputEventType.ENTER_USERNAME);
+        gamePlay = new ClientGamePlay(event.getUserName());
     }
 
     private void sendReadyToPlay() {
-        ReadyToPlayNetworkFromClientEvent event = new ReadyToPlayNetworkFromClientEvent(player);
+        ReadyToPlayNetworkFromClientEvent event = new ReadyToPlayNetworkFromClientEvent(gamePlay.getPlayer());
         network.sendEvent(event);
     }
 
@@ -71,7 +75,7 @@ public class Controller implements Runnable {
     }
 
     private void waitGame() {
-        view.writeWaitGame(new OutputEvent(OutputEventType.WAIT_GAME));
+        notifyObservers(new OutputEvent(OutputEventType.WAIT_GAME));
         try {
             Thread.sleep(SLEEP_TIME);
         } catch (InterruptedException e) {
@@ -83,30 +87,51 @@ public class Controller implements Runnable {
     private void startGame(NetworkFromServerEvent event) {
         StartGameNetworkFromServerEvent startEvent = (StartGameNetworkFromServerEvent) event;
 
-        if (startEvent.getPlayer1().getUserName().equals(player.getUserName())) {
-            player = startEvent.getPlayer1();
-            competitorsPlayer = startEvent.getPlayer2();
-            isFirstStepper = true;
+        if (startEvent.getPlayer1().getUserName().equals(gamePlay.getPlayer().getUserName())) {
+            gamePlay.setPlayer(startEvent.getPlayer1());
+            gamePlay.setCompetitorsPlayer(startEvent.getPlayer2());
+            gamePlay.setFirstStepper(true);
 
-        } else if (startEvent.getPlayer2().getUserName().equals(player.getUserName())) {
-            player = startEvent.getPlayer2();
-            competitorsPlayer = startEvent.getPlayer1();
-            isFirstStepper = false;
+        } else if (startEvent.getPlayer2().getUserName().equals(gamePlay.getPlayer().getUserName())) {
+            gamePlay.setPlayer(startEvent.getPlayer2());
+            gamePlay.setCompetitorsPlayer(startEvent.getPlayer1());
+            gamePlay.setFirstStepper(false);
         }
 
         StartGameOutputEvent outEvent = new StartGameOutputEvent(startEvent.getPlayer1().getUserName(),
                 startEvent.getPlayer2().getUserName());
-        view.writeStartGame(outEvent);
+        notifyObservers(outEvent);
     }
 
     private void enterStep() {
-        EnterStepInputEvent event = (EnterStepInputEvent) view.readStep();
-        Field field = new Field(event.getPosX(), event.getPosY(), player);
+        EnterStepInputEvent event = (EnterStepInputEvent) view.getFromView(InputEventType.ENTER_STEP);
+        Field field = new Field(event.getPosX(), event.getPosY(), gamePlay.getPlayer());
         network.sendEvent(new SendStepNetworkFromClientEvent(field));
     }
 
     private void checkStepResult() {
         StepResultNetworkFromServerEvent event = (StepResultNetworkFromServerEvent) network.getEvent();
-        view.writeEnterStepResult(new StepResultOutputEvent(event.getStepResult()));
+        StepResultOutputEvent outEvent = new StepResultOutputEvent(event.getStepResult());
+        notifyObservers(outEvent);
+    }
+
+    @Override
+    public void addObserver(ViewObserver observer) {
+        if (listObservers == null) {
+            listObservers = new ArrayList<>();
+        }
+        listObservers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(ViewObserver observer) {
+        listObservers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(OutputEvent event) {
+        for (ViewObserver observer : listObservers) {
+            observer.handleEvent(event);
+        }
     }
 }

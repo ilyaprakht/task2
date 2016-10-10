@@ -7,8 +7,6 @@ public enum OutputEventType {
     WAIT_COMPETITORS_STEP,
     STEP_RESULT,
     PRINT_GAME_FIELD,
-    END_OF_GAME,
-    WIN,
-    LOSE,
+    COMPETITORS_STEP_RESULT,
     ;
 }

@@ -4,7 +4,6 @@ import view.View;
 import view.event.input.EnterStepInputEvent;
 import view.event.input.EnterUsernameInputEvent;
 import view.event.input.InputEvent;
-import view.event.output.EnterStepResultOutputEvent;
 import view.event.output.OutputEvent;
 import view.event.output.PrintGameFieldOutputEvent;
 import view.event.output.StartGameOutputEvent;
@@ -87,28 +86,47 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void writeEnterStepResult(OutputEvent event) {
-        EnterStepResultOutputEvent resultEvent = (EnterStepResultOutputEvent) event;
+    public void writeCompetitorsStepResultOk(OutputEvent event) {
+        write("competitors step adopted");
+    }
 
-        switch (resultEvent.getStepResult()) {
-            case ENTER_OK:
-                write("step adopted");
-                break;
-            case NOT_VALID_FIELD:
-                write("step command is out of range");
-                write("please enter correct step");
-                break;
-            case BUSY_FIELD:
-                write("this field is busy yet");
-                write("please enter correct step");
-                break;
-            case WINNER_STEP:
-                write("you win! congratulations!");
-                break;
-            case END_OF_GAME:
-                write("nobody wins");
-                break;
-        }
+    @Override
+    public void writeCompetitorsStepResultEndOfGame(OutputEvent event) {
+        write("competitors step adopted");
+        write("end of game. nobody wins");
+    }
+
+    @Override
+    public void writeCompetitorsStepResultWin(OutputEvent event) {
+        write("competitors step adopted");
+        write("you lose");
+    }
+
+    @Override
+    public void writeStepResultOk(OutputEvent event) {
+        write("step adopted");
+    }
+
+    @Override
+    public void writeStepResultNotValid(OutputEvent event) {
+        write("step command is out of range");
+        write("please enter correct step");
+    }
+
+    @Override
+    public void writeStepResultBusyField(OutputEvent event) {
+        write("this field is busy yet");
+        write("please enter correct step");
+    }
+
+    @Override
+    public void writeStepResultEndOfGame(OutputEvent event) {
+        write("end of game. nobody wins");
+    }
+
+    @Override
+    public void writeStepResultWin(OutputEvent event) {
+        write("you win! congratulations!");
     }
 
     @Override
@@ -117,21 +135,5 @@ public class ConsoleView implements View {
 
         write("game field now is so:");
         write(printEvent.getGameField());
-    }
-
-    @Override
-    public void writeEndOfGame(OutputEvent event) {
-        write("game is over");
-
-        switch (event.getEventType()) {
-            case END_OF_GAME:
-                write("nobody wins");
-                break;
-            case WIN:
-                write("you win! congratulations!");
-                break;
-            case LOSE:
-                write("you lose");
-        }
     }
 }

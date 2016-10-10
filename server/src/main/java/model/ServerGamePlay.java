@@ -3,7 +3,7 @@ package model;
 import model.enums.StepResult;
 import model.enums.StepType;
 
-public class GamePlay {
+public class ServerGamePlay {
 
     private Player player1;
     private Player player2;
@@ -17,7 +17,7 @@ public class GamePlay {
     private final byte GAME_FIELD_SIZE = 3;
     private final byte GAME_FIELD_WINNER_COUNT = 3;
 
-    GamePlay(Player player1, Player player2) {
+    ServerGamePlay(Player player1, Player player2) {
         this.player1 = player1;
         this.player1.setStepType(StepType.CROSS);
         this.player2 = player2;
