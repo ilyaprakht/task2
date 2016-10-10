@@ -7,7 +7,7 @@ public class OutputEvent {
 
     private OutputEventType eventType;
 
-    OutputEvent(OutputEventType eventType) {
+    public OutputEvent(OutputEventType eventType) {
         this.eventType = eventType;
     }
 

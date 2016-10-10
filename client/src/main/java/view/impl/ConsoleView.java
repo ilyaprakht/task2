@@ -4,6 +4,7 @@ import view.View;
 import view.event.input.EnterStepInputEvent;
 import view.event.input.EnterUsernameInputEvent;
 import view.event.input.InputEvent;
+import view.event.output.EnterStepResultOutputEvent;
 import view.event.output.OutputEvent;
 import view.event.output.PrintGameFieldOutputEvent;
 import view.event.output.StartGameOutputEvent;
@@ -18,6 +19,8 @@ public class ConsoleView implements View {
 
     @Override
     public InputEvent readUsername() {
+        write("enter your username:");
+
         String inputLine = read();
 
         if (inputLine.trim().isEmpty()) {
@@ -31,6 +34,8 @@ public class ConsoleView implements View {
 
     @Override
     public InputEvent readStep() {
+        write("please enter your step:");
+
         String inputLine = read();
 
         Pattern p = Pattern.compile("^[1-9]+\\s[1-9]+$");
@@ -73,7 +78,7 @@ public class ConsoleView implements View {
         write("players: ");
         write("X: " + startEvent.getPlayer1());
         write("0: " + startEvent.getPlayer2());
-        write("first step by " + startEvent.getFirstStepper());
+        write("first step by " + startEvent.getPlayer1());
     }
 
     @Override
@@ -82,23 +87,26 @@ public class ConsoleView implements View {
     }
 
     @Override
-    public void writeWaitStep(OutputEvent event) {
-        write("please enter your step:");
-    }
-
-    @Override
     public void writeEnterStepResult(OutputEvent event) {
-        switch (event.getEventType()) {
-            case ENTER_STEP_OK:
+        EnterStepResultOutputEvent resultEvent = (EnterStepResultOutputEvent) event;
+
+        switch (resultEvent.getStepResult()) {
+            case ENTER_OK:
                 write("step adopted");
                 break;
-            case ENTER_STEP_NOT_VALID:
+            case NOT_VALID_FIELD:
                 write("step command is out of range");
                 write("please enter correct step");
                 break;
-            case ENTER_STEP_BUSY:
+            case BUSY_FIELD:
                 write("this field is busy yet");
                 write("please enter correct step");
+                break;
+            case WINNER_STEP:
+                write("you win! congratulations!");
+                break;
+            case END_OF_GAME:
+                write("nobody wins");
                 break;
         }
     }

@@ -17,8 +17,6 @@ public interface View {
 
     void writeWaitCompetitorsStep(OutputEvent event);
 
-    void writeWaitStep(OutputEvent event);
-
     void writeEnterStepResult(OutputEvent event);
 
     void writePrintGameField(OutputEvent event);

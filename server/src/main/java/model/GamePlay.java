@@ -3,7 +3,7 @@ package model;
 import model.enums.StepResult;
 import model.enums.StepType;
 
-public class ServerGamePlay implements GamePlay {
+public class GamePlay {
 
     private Player player1;
     private Player player2;
@@ -17,7 +17,7 @@ public class ServerGamePlay implements GamePlay {
     private final byte GAME_FIELD_SIZE = 3;
     private final byte GAME_FIELD_WINNER_COUNT = 3;
 
-    ServerGamePlay(Player player1, Player player2) {
+    GamePlay(Player player1, Player player2) {
         this.player1 = player1;
         this.player1.setStepType(StepType.CROSS);
         this.player2 = player2;
@@ -25,32 +25,26 @@ public class ServerGamePlay implements GamePlay {
         gameField = new GameField(GAME_FIELD_SIZE, GAME_FIELD_WINNER_COUNT);
     }
 
-    @Override
     public Player getPlayer1() {
         return player1;
     }
 
-    @Override
     public Player getPlayer2() {
         return player2;
     }
 
-    @Override
     public boolean isWinner(Player player) {
         return (existWinner && player.equals(lastStepper));
     }
 
-    @Override
     public boolean checkEndOfGame() {
         return endOfGame;
     }
 
-    @Override
     public boolean checkExistWinner() {
         return existWinner;
     }
 
-    @Override
     public StepResult makeStep(Field field, Player player) {
         if (!checkNextStep(player)) {
             return null;
@@ -75,22 +69,18 @@ public class ServerGamePlay implements GamePlay {
         return result;
     }
 
-    @Override
     public Field getLastStep() {
         return lastStep;
     }
 
-    @Override
     public boolean isFirstStepper(Player player) {
         return player.equals(player1);
     }
 
-    @Override
     public boolean checkNextStep(Player player) {
         return !player.equals(lastStepper);
     }
 
-    @Override
     public String getVisualGameField() {
         return gameField.getVisualGameField();
     }
