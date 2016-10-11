@@ -27,4 +27,9 @@ public class Player {
     public void setStepType(StepType stepType) {
         this.stepType = stepType;
     }
+
+    @Override
+    public boolean equals(Object player) {
+        return ((Player) player).getUserName().equals(userName);
+    }
 }

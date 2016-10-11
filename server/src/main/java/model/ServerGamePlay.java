@@ -11,11 +11,18 @@ public class ServerGamePlay {
 
     private Player lastStepper;
     private Field lastStep;
+    private boolean readyToGame = false;
     private boolean endOfGame = false;
     private boolean existWinner = false;
 
     private final byte GAME_FIELD_SIZE = 3;
     private final byte GAME_FIELD_WINNER_COUNT = 3;
+
+    ServerGamePlay(Player player1) {
+        this.player1 = player1;
+        this.player1.setStepType(StepType.CROSS);
+        gameField = new GameField(GAME_FIELD_SIZE, GAME_FIELD_WINNER_COUNT);
+    }
 
     ServerGamePlay(Player player1, Player player2) {
         this.player1 = player1;
@@ -23,25 +30,32 @@ public class ServerGamePlay {
         this.player2 = player2;
         this.player2.setStepType(StepType.TOE);
         gameField = new GameField(GAME_FIELD_SIZE, GAME_FIELD_WINNER_COUNT);
+        readyToGame = true;
     }
 
-    public Player getPlayer1() {
+    public void addSecondPlayer(Player player) {
+        player2 = player;
+        player2.setStepType(StepType.TOE);
+        readyToGame = true;
+    }
+
+    synchronized public Player getPlayer1() {
         return player1;
     }
 
-    public Player getPlayer2() {
+    synchronized public Player getPlayer2() {
         return player2;
     }
 
-    public boolean isWinner(Player player) {
+    synchronized public boolean isWinner(Player player) {
         return (existWinner && player.equals(lastStepper));
     }
 
-    public boolean checkEndOfGame() {
+    synchronized public boolean checkEndOfGame() {
         return endOfGame;
     }
 
-    public boolean checkExistWinner() {
+    synchronized public boolean checkExistWinner() {
         return existWinner;
     }
 
@@ -69,19 +83,29 @@ public class ServerGamePlay {
         return result;
     }
 
-    public Field getLastStep() {
+    synchronized public Field getLastStep() {
         return lastStep;
     }
 
-    public boolean isFirstStepper(Player player) {
+    synchronized public boolean isFirstStepper(Player player) {
         return player.equals(player1);
     }
 
-    public boolean checkNextStep(Player player) {
+    synchronized public boolean checkNextStep(Player player) {
         return !player.equals(lastStepper);
     }
 
-    public String getVisualGameField() {
+    synchronized public String getVisualGameField() {
         return gameField.getVisualGameField();
     }
+
+    synchronized public boolean checkReadyToGame() {
+        return readyToGame;
+    }
+
+    @Override
+    public boolean equals(Object gamePlay) {
+        return (player1.equals(((ServerGamePlay) gamePlay).getPlayer1()) && player2.equals(((ServerGamePlay) gamePlay).getPlayer2()));
+    }
+
 }
