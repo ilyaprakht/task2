@@ -14,7 +14,6 @@ public class ServerGamePlay {
     private StepResult lastStepResult;
     private boolean readyToGame = false;
     private boolean endOfGame = false;
-    private boolean existWinner = false;
 
     private final byte GAME_FIELD_SIZE = 3;
     private final byte GAME_FIELD_WINNER_COUNT = 3;
@@ -25,16 +24,7 @@ public class ServerGamePlay {
         gameField = new GameField(GAME_FIELD_SIZE, GAME_FIELD_WINNER_COUNT);
     }
 
-    ServerGamePlay(Player player1, Player player2) {
-        this.player1 = player1;
-        this.player1.setStepType(StepType.CROSS);
-        this.player2 = player2;
-        this.player2.setStepType(StepType.TOE);
-        gameField = new GameField(GAME_FIELD_SIZE, GAME_FIELD_WINNER_COUNT);
-        readyToGame = true;
-    }
-
-    public void addSecondPlayer(Player player) {
+    void addSecondPlayer(Player player) {
         player2 = player;
         player2.setStepType(StepType.TOE);
         readyToGame = true;
@@ -48,28 +38,17 @@ public class ServerGamePlay {
         return player2;
     }
 
-    synchronized public boolean isWinner(Player player) {
-        return (existWinner && player.equals(lastStepper));
-    }
-
     synchronized public boolean checkEndOfGame() {
         return endOfGame;
     }
 
-    synchronized public boolean checkExistWinner() {
-        return existWinner;
-    }
-
     public StepResult makeStep(Field field, Player player) {
-        if (!checkNextStep(player)) {
-            return null;
-        }
-
         StepResult result = gameField.enterStep(field);
 
         if (result != StepResult.NOT_VALID_FIELD && result != StepResult.BUSY_FIELD) {
             lastStepper = player;
             lastStep = field;
+            lastStepResult = result;
         }
 
         if (result == StepResult.END_OF_GAME) {
@@ -78,7 +57,6 @@ public class ServerGamePlay {
 
         if (result == StepResult.WINNER_STEP) {
             endOfGame = true;
-            existWinner = true;
         }
 
         return result;
@@ -92,11 +70,10 @@ public class ServerGamePlay {
         return lastStepResult;
     }
 
-    synchronized public boolean isFirstStepper(Player player) {
-        return player.equals(player1);
-    }
-
     synchronized public boolean checkNextStep(Player player) {
+        if (lastStepper == null) {
+            return false;
+        }
         return !player.equals(lastStepper);
     }
 

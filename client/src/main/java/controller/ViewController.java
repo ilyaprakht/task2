@@ -1,5 +1,6 @@
 package controller;
 
+import org.apache.log4j.Logger;
 import view.View;
 import view.ViewObserver;
 import view.enums.InputEventType;
@@ -10,23 +11,31 @@ import view.event.output.StepResultOutputEvent;
 
 public class ViewController implements ViewObserver{
 
+    private final static Logger LOG = Logger.getLogger("debug");
+
     private View view;
 
     public ViewController(View view) {
         this.view = view;
     }
 
-    public InputEvent getFromView(InputEventType eventType) {
+    InputEvent getFromView(InputEventType eventType) {
+        InputEvent event = null;
         switch (eventType) {
             case ENTER_USERNAME:
-                return view.readUsername();
+                event = view.readUsername();
+                LOG.debug(event);
+                break;
             case ENTER_STEP:
-                return view.readStep();
+                event = view.readStep();
+                LOG.debug(event);
+                break;
         }
-        return null;
+        return event;
     }
 
-    public void sendToView(OutputEvent event) {
+    private void sendToView(OutputEvent event) {
+        LOG.debug(event);
         switch (event.getEventType()) {
             case START:
                 view.writeStart(event);

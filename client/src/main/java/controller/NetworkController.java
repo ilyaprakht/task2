@@ -3,14 +3,15 @@ package controller;
 
 import network.event.from_client.NetworkFromClientEvent;
 import network.event.from_server.NetworkFromServerEvent;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
 public class NetworkController {
+
+    private final static Logger LOG = Logger.getLogger("debug");
 
     private String address;
     private int port;
@@ -25,11 +26,13 @@ public class NetworkController {
 
     private void connect() {
         try {
-            socket = new Socket(address, port);
-            sin = new ObjectInputStream(socket.getInputStream());
+            InetAddress inetAdr = InetAddress.getByName(address);
+            socket = new Socket(inetAdr, port);
             sout = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+            sout.flush();
+            sin = new ObjectInputStream(socket.getInputStream());
+        } catch (Exception e) {
+            LOG.error(e.getCause() + " " + e.getMessage());
         }
     }
 
@@ -39,13 +42,14 @@ public class NetworkController {
         }
     }
 
-    public void sendEvent(NetworkFromClientEvent event) {
+    void sendEvent(NetworkFromClientEvent event) {
         pingOrReconnect();
 
         try {
             sout.writeObject(event);
-        } catch (IOException e) {
-            e.printStackTrace();
+            LOG.debug(event);
+        } catch (Exception e) {
+            LOG.error(e.getCause() + " " + e.getMessage());
         }
     }
 
@@ -56,10 +60,9 @@ public class NetworkController {
 
         try {
             event = (NetworkFromServerEvent) sin.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOG.debug(event);
+        } catch (Exception e) {
+            LOG.error(e.getCause() + " " + e.getMessage());
         }
 
         return event;

@@ -2,12 +2,15 @@ package controller;
 
 
 import model.ServerGamePlay;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ConnectionController implements Runnable {
+
+    private final static Logger LOG = Logger.getLogger("debug");
 
     private int port;
 
@@ -20,8 +23,8 @@ public class ConnectionController implements Runnable {
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error(e.getCause() + " " + e.getMessage());
         }
 
         while (true) {
@@ -33,8 +36,8 @@ public class ConnectionController implements Runnable {
 
                 Thread thread = new Thread(controller);
                 thread.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                LOG.error(e.getCause() + " " + e.getMessage());
             }
         }
     }

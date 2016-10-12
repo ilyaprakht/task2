@@ -1,14 +1,15 @@
 package model;
 
-
 import model.enums.StepType;
+import java.io.Serializable;
 
-public class Player {
+
+public class Player implements Serializable {
 
     private String userName;
     private StepType stepType;
 
-    public Player(String userName) {
+    Player(String userName) {
         this.userName = userName;
     }
 
@@ -16,20 +17,16 @@ public class Player {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public StepType getStepType() {
+    StepType getStepType() {
         return stepType;
     }
 
-    public void setStepType(StepType stepType) {
+    void setStepType(StepType stepType) {
         this.stepType = stepType;
     }
 
     @Override
     public boolean equals(Object player) {
-        return ((Player) player).getUserName().equals(userName);
+        return userName.equals(((Player) player).getUserName());
     }
 }

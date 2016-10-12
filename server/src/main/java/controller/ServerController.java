@@ -14,13 +14,13 @@ import network.event.from_server.NetworkFromServerEvent;
 import network.event.from_server.StartGameNetworkFromServerEvent;
 import network.event.from_server.StepResultNetworkFromServerEvent;
 
-public class ServerController implements Runnable {
+class ServerController implements Runnable {
 
     private NetworkController network;
     private ServerGamePlay gamePlay;
     private Player player;
 
-    public ServerController(NetworkController network) {
+    ServerController(NetworkController network) {
         this.network = network;
     }
 

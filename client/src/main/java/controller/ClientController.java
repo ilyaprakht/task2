@@ -10,6 +10,7 @@ import network.event.from_server.CompetitorsStepResultNetworkFromServerEvent;
 import network.event.from_server.NetworkFromServerEvent;
 import network.event.from_server.StartGameNetworkFromServerEvent;
 import network.event.from_server.StepResultNetworkFromServerEvent;
+import org.apache.log4j.Logger;
 import view.ViewObservable;
 import view.ViewObserver;
 import view.enums.InputEventType;
@@ -26,10 +27,12 @@ import java.util.List;
 
 public class ClientController implements Runnable, ViewObservable {
 
-    ViewController view;
+    private final static Logger LOG = Logger.getLogger("debug");
+
+    private ViewController view;
     private NetworkController network;
-    List<ViewObserver> listObservers;
-    ClientGamePlay gamePlay;
+    private List<ViewObserver> listObservers;
+    private ClientGamePlay gamePlay;
 
     private final long SLEEP_TIME = 2000;
 
@@ -97,7 +100,7 @@ public class ClientController implements Runnable, ViewObservable {
         try {
             Thread.sleep(SLEEP_TIME);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error(e.getCause() + " " + e.getMessage());
         }
     }
 
@@ -162,7 +165,7 @@ public class ClientController implements Runnable, ViewObservable {
         try {
             Thread.sleep(SLEEP_TIME);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error(e.getCause() + " " + e.getMessage());
         }
     }
 

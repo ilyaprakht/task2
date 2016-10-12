@@ -5,7 +5,7 @@ import view.enums.OutputEventType;
 
 public class PrintGameFieldOutputEvent extends OutputEvent {
 
-    String gameField;
+    private String gameField;
 
     public PrintGameFieldOutputEvent(String gameField) {
         super(OutputEventType.PRINT_GAME_FIELD);
