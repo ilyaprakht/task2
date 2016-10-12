@@ -11,6 +11,7 @@ public class ServerGamePlay {
 
     private Player lastStepper;
     private Field lastStep;
+    private StepResult lastStepResult;
     private boolean readyToGame = false;
     private boolean endOfGame = false;
     private boolean existWinner = false;
@@ -85,6 +86,10 @@ public class ServerGamePlay {
 
     synchronized public Field getLastStep() {
         return lastStep;
+    }
+
+    synchronized public StepResult getLastStepResult() {
+        return lastStepResult;
     }
 
     synchronized public boolean isFirstStepper(Player player) {

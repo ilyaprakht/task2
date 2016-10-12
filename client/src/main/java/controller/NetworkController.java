@@ -12,13 +12,13 @@ import java.net.Socket;
 
 public class NetworkController {
 
-    private InetAddress address;
+    private String address;
     private int port;
     private Socket socket;
     private ObjectInputStream sin;
     private ObjectOutputStream sout;
 
-    public NetworkController(InetAddress address, int port) {
+    public NetworkController(String address, int port) {
         this.address = address;
         this.port = port;
     }

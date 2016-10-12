@@ -11,7 +11,7 @@ public class ConnectionController implements Runnable {
 
     private int port;
 
-    ConnectionController(int port) {
+    public ConnectionController(int port) {
         this.port = port;
     }
 
