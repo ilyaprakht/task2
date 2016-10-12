@@ -34,7 +34,7 @@ public class NetworkController {
     }
 
     private void pingOrReconnect() {
-        if (!socket.isConnected()) {
+        if (socket == null || !socket.isConnected()) {
             connect();
         }
     }
